@@ -1,0 +1,2 @@
+python-openstackclient>=5.4.0
+python-magnumclient>=3.3.0
