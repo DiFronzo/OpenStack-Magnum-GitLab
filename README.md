@@ -79,6 +79,7 @@ If you want to remove everything connected to gitlab-runner.
 kubectl delete deployment,configmap,rolebinding,role,serviceaccount --all --namespace=gitlab-runner
 kubectl delete namespace gitlab-runner
 ```
+### Setup everything created for gitlab-runner
 
 To add the configuration again. You will have to first remove your token from `gitlab-runner-k8s.yaml` so, it look like this `token =`.
 ```bash
