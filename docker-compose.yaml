@@ -1,0 +1,32 @@
+version: "2.4"
+services:
+  gitlab-runner:
+    build:
+      context: ./gitlab_runner
+      args:
+        URL: ${URL}
+        TOKEN: ${TOKEN}
+    volumes:
+      - ./gitlab_runner:/mnt
+    env_file: ./.env
+
+  kubernetes-gitlab:
+    depends_on:
+      - "gitlab-runner"
+    build:
+      context: ./k8s-gitlab
+      args:
+        CLUSTER: ${CLUSTER}
+        OS_REGION_NAME: ${OS_REGION_NAME}
+        OS_PROJECT_DOMAIN_ID: ${OS_PROJECT_DOMAIN_ID}
+        OS_INTERFACE: ${OS_INTERFACE}
+        OS_AUTH_URL: ${OS_AUTH_URL}
+        OS_USERNAME: ${OS_USERNAME}
+        OS_PROJECT_ID: ${OS_PROJECT_ID}
+        OS_USER_DOMAIN_NAME: ${OS_USER_DOMAIN_NAME}
+        OS_PROJECT_NAME: ${OS_PROJECT_NAME}
+        OS_PASSWORD: ${OS_PASSWORD}
+        OS_IDENTITY_API_VERSION: ${OS_IDENTITY_API_VERSION}
+    volumes:
+      - ./gitlab_runner:/mnt
+    env_file: ./.env

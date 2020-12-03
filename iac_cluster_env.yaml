@@ -1,0 +1,6 @@
+parameters:
+  key_name:
+  external_network:
+  docker_volume_size: 20
+  docker_storage_driver: overlay
+  dns_nameserver: 1.1.1.1

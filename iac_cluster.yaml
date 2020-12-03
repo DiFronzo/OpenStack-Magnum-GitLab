@@ -1,0 +1,141 @@
+heat_template_version: pike
+
+description: >
+  This template for deployment of a Kubernetes Cluster.
+
+parameters:
+  cluster_name:
+    type: string
+    description: (optional) Name for cluster.
+    default: k8s-gitlab-cluster
+  node_count:
+    type: number
+    default: 1
+    description: The node count for this cluster.
+  master_count:
+    type: number
+    default: 1
+    description: The number of master nodes for this cluster.
+  create_timeout:
+    type: number
+    default: 60
+    description: Timeout for creating the cluster in minutes.
+  cluster_template_name:
+    type: string
+    description: (optional) Name for cluster.
+    default: kubernetes-from-template
+  key_name:
+    type: string
+    constraints:
+      - custom_constraint: nova.keypair
+  flavor:
+    type: string
+    description: Flavor for the COE nodes to be created
+    default: m1.small
+    constraints:
+      - custom_constraint: nova.flavor
+  master_flavor:
+    type: string
+    description: Flavor for the COE masters to be created
+    default: m1.small
+    constraints:
+      - custom_constraint: nova.flavor
+  image:
+    type: string
+    description: Image ID or image name to use for the COE nodes/masters
+    default: fedora-coreos-stable
+    constraints:
+      - custom_constraint: glance.image
+  coe:
+    type: string
+    description: The Container Orchestration Engine for cluster
+    default: kubernetes
+  server_type:
+    type: string
+    description: Specify the server type to be used
+    default: vm
+  registry_enabled:
+    type: boolean
+    description: Enable the docker registry
+    default: False
+  master_lb_enabled:
+    type: boolean
+    description: clusters should have a load balancer for master nodes or not
+    default: False
+  floating_ip_enabled:
+    type: boolean
+    description: clusters should have a floating ip for master nodes or not
+    default: True
+  docker_volume_size:
+    type: number
+    description: The size in GB of the docker volume.
+    default: 20
+  network_driver:
+    type: string
+    description: The name of the driver used for instantiating container networks.
+    default: calico
+  docker_storage_driver:
+    type: string
+    description: Select a docker storage driver.
+  volume_driver:
+    type: string
+    description: The volume driver name for instantiating container volume.
+    default: cinder
+  dns_nameserver:
+    type: string
+    description: The DNS nameserver address.
+    constraints:
+  external_network:
+    type: string
+    description: The external neutron network to attach the Cluster
+    constraints:
+      - custom_constraint: neutron.network
+
+resources:
+  coe_cluster:
+    type: OS::Magnum::Cluster
+    properties:
+      name: { get_param: cluster_name }
+      cluster_template: { get_resource: coe_cluster_template }
+      keypair: { get_param: key_name }
+      node_count: { get_param: node_count }
+      master_count: { get_param: master_count }
+      create_timeout: { get_param: create_timeout }
+
+  coe_cluster_template:
+    type: OS::Magnum::ClusterTemplate
+    properties:
+      name: { get_param: cluster_template_name }
+      flavor: { get_param: flavor }
+      keypair: { get_param: key_name }
+      master_flavor: { get_param: master_flavor }
+      image: { get_param: image }
+      coe: { get_param: coe }
+      server_type: { get_param: server_type }
+      registry_enabled: { get_param: registry_enabled }
+      master_lb_enabled: { get_param: master_lb_enabled }
+      floating_ip_enabled: { get_param: floating_ip_enabled }
+      external_network: { get_param: external_network }
+      docker_volume_size: { get_param: docker_volume_size }
+      network_driver: { get_param: network_driver }
+      docker_storage_driver: { get_param: docker_storage_driver }
+      volume_driver: { get_param: volume_driver }
+      dns_nameserver: { get_param: dns_nameserver }
+      labels: {"keystone_auth_enabled": "False", "kube_tag": "v1.17.11"}
+
+outputs:
+  coe_api_address:
+    description: The endpoint URL of COE API exposed to end-users
+    value: { get_attr: [coe_cluster, api_address] }
+  coe_stack:
+    description: The reference UUID of orchestration stack for the COE cluster
+    value: { get_attr: [coe_cluster, stack_id] }
+  coe_discovery_url:
+    description: The custom discovery url for node discovery.
+    value: { get_attr: [coe_cluster, discovery_url] }
+  container_version:
+    description: Version info of container environment.
+    value: { get_attr: [coe_cluster, container_version] }
+  coe_version:
+    description: Version info of chosen COE.
+    value: { get_attr: [coe_cluster, coe_version] }
