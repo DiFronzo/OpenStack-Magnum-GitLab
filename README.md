@@ -14,8 +14,8 @@ You also need basic understanding of OpenStack Heat Templates and Docker.
 
 ## Install dependencies
 ```BASH
-git clone %THIS PROJECT%
-cd %THIS PROJECT%
+git clone https://github.com/DiFronzo/OpenStack-Magnum-GitLab.git
+cd OpenStack-Magnum-GitLab
 pip3 install -r requirements.txt
 ```
 Installation of Docker is found [her](https://docs.docker.com/engine/install/ubuntu/) and Docker Compose is found [her](https://docs.docker.com/compose/install/)  for Linux.
