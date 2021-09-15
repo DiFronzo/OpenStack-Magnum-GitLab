@@ -121,7 +121,7 @@ resources:
       docker_storage_driver: { get_param: docker_storage_driver }
       volume_driver: { get_param: volume_driver }
       dns_nameserver: { get_param: dns_nameserver }
-      labels: {"keystone_auth_enabled": "False", "kube_tag": "v1.17.11"}
+      labels: {"keystone_auth_enabled": "False", "kube_tag": "v1.18.10", "heat_container_agent_tag": "ussuri-stable-1"}
 
 outputs:
   coe_api_address:
