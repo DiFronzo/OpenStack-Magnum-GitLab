@@ -15,9 +15,13 @@ metadata:
   namespace: gitlab-runner
   name: gitlab-admin
 rules:
-  - apiGroups: [""]
-    resources: ["*"]
-    verbs: ["*"]
+  - apiGroups:
+    - ""
+    - extensions
+    resources:
+    - '*'
+    verbs:
+    - '*'
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -76,7 +80,12 @@ spec:
       containers:
         - args:
           - run
-          image: gitlab/gitlab-runner:latest
+          image: gitlab/gitlab-runner:alpine-v14.3.0-rc1
+          env:
+            - name: KUBERNETES_NAMESPACE
+              value: gitlab-runner
+            - name: KUBERNETES_SERVICE_ACCOUNT
+              value: gitlab-admin
           imagePullPolicy: Always
           name: gitlab-runner
           resources:
